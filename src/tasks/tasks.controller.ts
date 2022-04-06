@@ -7,15 +7,20 @@ import { GetTaskFilterDto } from './dto/get-task-filter.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../auth/user.entity';
 import { GetUser } from '../auth/get-user.decorator';
+import { Logger } from '@nestjs/common';
+
 
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
+  private logger = new Logger('TaskController');
+
   constructor(private tasksService: TasksService){}
 
   @Get()
   getTasks(@Query() filterDto:GetTaskFilterDto, @GetUser()user: User): Promise<Task[]>{
+    this.logger.verbose(`User "${JSON.stringify(user)}" and send ${JSON.stringify(filterDto)}`);
     return this.tasksService.getTasks(filterDto, user)
   }
 
@@ -26,6 +31,7 @@ export class TasksController {
 
   @Post()
   createTask(@Body() createTaskDto: CreateTaskDto, @GetUser()user: User): Promise<Task>{
+    this.logger.verbose(`User ${user.user_name} creating a new task ${JSON.stringify(createTaskDto)}`);
     return this.tasksService.createTask(createTaskDto, user);
   }
   @Delete('/:id')
