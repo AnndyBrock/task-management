@@ -1,5 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
 import { TaskStatus } from './task-status.enum';
+import { User } from '../auth/user.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Task {
@@ -15,5 +17,12 @@ export class Task {
 
   @Column()
   status: TaskStatus;
+
+  @CreateDateColumn({ type: 'timestamp without time zone', default: 'NOW()' })
+  created_date: Date
+
+  @ManyToOne(_type => User, user => user.tasks, {eager: false})
+  @Exclude({ toPlainOnly: true })
+  user: User;
 
 }
